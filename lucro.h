@@ -2,6 +2,8 @@
 #define LUCRO_H
 #include <stdio.h>
 
+int cont;
+
 void atualizarLucro(float lucro, FILE *l)
 {
     l = fopen("Lucros.txt", "w");
@@ -38,5 +40,10 @@ float verLucro(float lucro, FILE *l)
     fclose(l);
     return lucro;
 } //Retorna o valor do lucro atual
+
+float recebeLucro(float valor, int qtd, float lucro)
+{
+    return lucro + (valor * qtd);
+}
 
 #endif // LUCRO_H

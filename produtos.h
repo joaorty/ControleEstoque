@@ -23,16 +23,6 @@ int numerodeProdutos(int qtd, FILE *p)
     return qtd;
 } //Conta o número de produtos que existe na lista de produtos
 
-int continuarPrograma(void)
-{
-    fflush(stdin);
-    char aux;
-    printf("Deseja continuar usando o programa? (S/N): ");
-    scanf("%c", &aux);
-    system("cls");
-    if(aux == 's' || aux == 'S'){return 1;} else {return 0;}
-} //Função booleana que pergunta se o cliente quer continuar no programa
-
 int qntsProdutos(int max)
 {
     printf("Digite quantos produtos quer adicionar (max 100): ");
@@ -74,6 +64,19 @@ void adicionarDados(char *nome, int qtd, float valor, FILE *p)
     fclose(p);
 } //Por fim se utiliza essa função para se adicionar os dados
 
+void receberProduto(char *nome, int qtd, float valor, int max, FILE *p)
+{
+    for(cont = 0; cont < max; cont++)
+    {
+        nome = malloc( 32 * sizeof(char) );
+        nome = recebeNome(nome);
+        qtd = recebeQtd(qtd);
+        valor = recebeValor(valor);
+        adicionarDados(nome, qtd, valor, p);
+        free(nome);
+    }
+}
+
 int escolherProdutoVenda(int qtd, int aux)
 {
     printf("\tOpcao: ");
@@ -89,25 +92,37 @@ int escolherProdutoVenda(int qtd, int aux)
     return aux;
 } //Escolhe o produto para se vender
 
-char *atualizarNome(char *nome)
+char *atualizarNome(FILE *p)
 {
-    nome = malloc(100 * sizeof(char));
+    char *nome = malloc(100 * sizeof(char));
     fscanf(p, "%s", nome);
     return nome;
 } //Atualiza o nome de um indice de registro
 
-int atualizarQtd(void)
+int atualizarQtd(FILE *p)
 {
     char qtd[16];
     fscanf(p, "%s", qtd);
     return atoi(qtd);
 } //Atualizar a quantidade de um indice de registro
-float atualizarValor(void)
+float atualizarValor(FILE *p)
 {
     char valor[16];
     fscanf(p, "%s", valor);
     return atof(valor);
 } //Atualiza o valor de um indice de registro
+
+void atualizarStructs(FILE *p, int qtd, Produtos prod[])
+{
+    p = fopen("Produtos.txt", "r");
+    for(cont = 0; cont < qtd; cont++)
+    {
+        prod[cont].nome = atualizarNome(p);
+        prod[cont].qtd = atualizarQtd(p);
+        prod[cont].valor = atualizarValor(p);
+    }
+    fclose(p);
+}
 
 void sobrescreverDados(int qtd, float valor, char *nome, FILE *p)
 {
@@ -118,4 +133,27 @@ void sobrescreverDados(int qtd, float valor, char *nome, FILE *p)
     fclose(p);
 } //Assim que se vende, se sobrescreve os dados
 
+void mostrarProdutos(Produtos prod[], int qtdProdutos)
+{
+    printf("\tQual produto quer vender?\n");
+    for(cont = 0; cont < qtdProdutos; cont++)
+    {
+        printf("|%d - %s ", cont+1, prod[cont].nome);
+        printf("| %d unidades ", prod[cont].qtd);
+        printf("| %.2f reais |\n", prod[cont].qtd);
+    }
+}
+
+void s(char *nome, int qtd, float valor, FILE *p, int qtdProdutos, Produtos prod[])
+{
+    for(cont = 0; cont < qtdProdutos; cont++)
+    {
+        nome = malloc (32 * sizeof(char));
+        nome = prod[cont].nome;
+        qtd = prod[cont].qtd;
+        valor = prod[cont].valor;
+        sobrescreverDados(qtd, valor, nome, p);
+        free(nome);
+    }
+}
 #endif // PRODUTOS_H
